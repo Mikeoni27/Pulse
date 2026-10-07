@@ -23,7 +23,10 @@ async def redirect(
         raise HTTPException(status_code=status.HTTP_410_GONE, detail="Link is no longer active")
 
     # Extract request metadata
-    ip_address = request.client.host if request.client else None
+    ip_address = (
+            request.headers.get("cf-connecting-ip")
+            or (request.client.host if request.client else None)
+    )
     user_agent = request.headers.get("user-agent")
     referrer = request.headers.get("referer")
 
