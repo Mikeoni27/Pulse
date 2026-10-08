@@ -128,10 +128,11 @@ async def record_click(
     ip_address: str | None,
     user_agent: str | None,
     referrer: str | None,
-) -> None:
-    """Record a click and increment the denormalized counter.
+) -> uuid.UUID:
+    """Record a click, increment the counter, and return the click's ID.
 
     Synchronous version. Used as a fallback if the async queue is unavailable.
+    Returns the click UUID for attribution purposes.
     """
     click = Click(
         link_id=link.id,
@@ -147,6 +148,8 @@ async def record_click(
         .values(click_count=Link.click_count + 1)
     )
     await db.commit()
+    await db.refresh(click)
+    return click.id
 
 
 async def enqueue_click(
@@ -154,39 +157,45 @@ async def enqueue_click(
     ip_address: str | None,
     user_agent: str | None,
     referrer: str | None,
-) -> None:
+) -> uuid.UUID:
     """Push a click event onto the Arq queue for async processing.
 
-    Falls back to a synchronous DB write if Redis is unavailable —
-    better to have a slow but correct redirect than to lose the click.
+    Returns the pre-generated click_id — the worker will insert a Click row
+    with this exact ID, so we can reference it in the redirect URL immediately
+    (without waiting for the worker to finish).
+
+    Falls back to a synchronous DB write if Redis is unavailable.
     """
     from arq import create_pool
 
     from app.workers.settings import redis_settings
 
+    click_id = uuid.uuid4()
+
     try:
         redis = await create_pool(redis_settings())
         await redis.enqueue_job(
             "record_click_task",
+            click_id=str(click_id),
             link_id=str(link.id),
             ip_address=ip_address,
             user_agent=user_agent,
             referrer=referrer,
         )
         await redis.aclose()
+        return click_id
     except Exception:
         # Fallback: sync write so we don't lose the click
         from app.db.session import AsyncSessionLocal
 
         async with AsyncSessionLocal() as db:
-            await record_click(
+            return await record_click(
                 db,
                 link,
                 ip_address=ip_address,
                 user_agent=user_agent,
                 referrer=referrer,
             )
-
 
 async def get_link_owner_check(
     db: AsyncSession, short_code: str, owner_id: uuid.UUID
