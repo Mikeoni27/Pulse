@@ -46,6 +46,15 @@ async def landing(request: Request, db: AsyncSession = Depends(get_db)):
     )
 
 
+@router.get("/pricing", response_class=HTMLResponse)
+async def pricing_page(request: Request, db: AsyncSession = Depends(get_db)):
+    user = await get_optional_user(request, db)
+    return templates.TemplateResponse(
+        "pricing.html",
+        {"request": request, "current_user": user},
+    )
+
+
 @router.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request, db: AsyncSession = Depends(get_db)):
     user = await get_optional_user(request, db)

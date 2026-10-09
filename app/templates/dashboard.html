@@ -91,8 +91,21 @@
         </tbody>
     </table>
     {% else %}
-    <div class="px-6 py-12 text-center text-gray-500">
-        No links yet. Create your first one above.
+    <div class="px-6 py-16 text-center">
+        <div class="text-5xl mb-4">🔗</div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Create your first link</h3>
+        <p class="text-gray-600 mb-6 max-w-md mx-auto">
+            Use the form above to create a short link. Then click "Test link" to verify it works and see the click register.
+        </p>
+        <div class="text-left max-w-md mx-auto bg-gray-50 rounded-lg p-4 text-sm text-gray-700">
+            <p class="font-medium mb-2">Try this:</p>
+            <ol class="space-y-1 list-decimal list-inside">
+                <li>Paste <code class="bg-white px-1 rounded">https://google.com</code> in the URL field</li>
+                <li>Leave the custom code blank</li>
+                <li>Click "Shorten"</li>
+                <li>Your link appears below — click "View" to see analytics</li>
+            </ol>
+        </div>
     </div>
     {% endif %}
 </div>

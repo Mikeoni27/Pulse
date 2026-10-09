@@ -1,14 +1,19 @@
 {% extends "base.html" %}
-{% block title %}Pulse — Link attribution{% endblock %}
+{% block title %}Pulse — Attribution for indie SaaS{% endblock %}
 {% block content %}
 
-<div class="text-center py-16">
+<!-- Hero -->
+<div class="text-center py-12">
+    <div class="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-medium mb-4">
+        For indie SaaS founders
+    </div>
     <h1 class="text-5xl font-bold text-gray-900 mb-4">
-        Which links actually <span class="text-indigo-600">make you money?</span>
+        Know which marketing<br>
+        <span class="text-indigo-600">actually drives revenue.</span>
     </h1>
     <p class="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-        Pulse is a link shortener with built-in revenue attribution.
-        Create a link, share it anywhere, and see exactly which clicks turned into payments.
+        You write blog posts, tweet, launch on Product Hunt. Pulse tells you which of those links
+        led to actual paying customers — not just clicks.
     </p>
     <div class="flex gap-4 justify-center">
         <a href="/register" class="bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 font-medium">
@@ -20,19 +25,112 @@
     </div>
 </div>
 
-<div class="grid md:grid-cols-3 gap-6 mt-16">
-    <div class="bg-white p-6 rounded-lg border border-gray-200">
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">Shorten & share</h3>
-        <p class="text-gray-600">Create short links with custom slugs. Share them anywhere — Twitter, email, blog posts.</p>
+<!-- The problem -->
+<div class="max-w-3xl mx-auto mt-16 bg-white rounded-lg border border-gray-200 p-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">Sound familiar?</h2>
+    <ul class="space-y-3 text-gray-700">
+        <li class="flex gap-3">
+            <span class="text-indigo-600 font-bold">→</span>
+            You spent 4 hours writing a blog post. It got 200 clicks. Zero signups. Was it worth it?
+        </li>
+        <li class="flex gap-3">
+            <span class="text-indigo-600 font-bold">→</span>
+            You posted on 5 different platforms. You have no idea which one actually converted.
+        </li>
+        <li class="flex gap-3">
+            <span class="text-indigo-600 font-bold">→</span>
+            Google Analytics says one thing. Stripe says another. They don't match.
+        </li>
+        <li class="flex gap-3">
+            <span class="text-indigo-600 font-bold">→</span>
+            Bitly shows clicks. But clicks aren't revenue.
+        </li>
+    </ul>
+</div>
+
+<!-- How it works -->
+<div class="max-w-4xl mx-auto mt-16">
+    <h2 class="text-3xl font-bold text-gray-900 text-center mb-8">How Pulse works</h2>
+
+    <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-white p-6 rounded-lg border border-gray-200">
+            <div class="text-sm text-indigo-600 font-bold mb-2">STEP 1</div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Create a short link</h3>
+            <p class="text-gray-600 text-sm">
+                Pick a custom slug or use a random one. Example:
+                <code class="bg-gray-100 px-1 rounded text-xs">pulse.app/r/launch</code>
+            </p>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg border border-gray-200">
+            <div class="text-sm text-indigo-600 font-bold mb-2">STEP 2</div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Share it</h3>
+            <p class="text-gray-600 text-sm">
+                Post it on Twitter, put it in your blog, email it to your list. Anywhere.
+            </p>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg border border-gray-200">
+            <div class="text-sm text-indigo-600 font-bold mb-2">STEP 3</div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">See what converts</h3>
+            <p class="text-gray-600 text-sm">
+                Get real-time click analytics. Connect Stripe to see which links actually
+                drove payments.
+            </p>
+        </div>
     </div>
-    <div class="bg-white p-6 rounded-lg border border-gray-200">
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">Track every click</h3>
-        <p class="text-gray-600">See who clicked, from where, on what device — with real-time analytics.</p>
+</div>
+
+<!-- Attribution explanation (honest) -->
+<div class="max-w-3xl mx-auto mt-16 bg-amber-50 rounded-lg border border-amber-200 p-8">
+    <h2 class="text-xl font-bold text-gray-900 mb-3">How revenue attribution works</h2>
+    <p class="text-gray-700 mb-4">
+        When someone clicks your Pulse link, we append a <code class="bg-white px-1 rounded">pulse_click_id</code>
+        to the destination URL. When they complete a Stripe checkout, if your app passes that ID back
+        as <code class="bg-white px-1 rounded">client_reference_id</code>, we match the payment to the original click.
+    </p>
+    <p class="text-gray-700 mb-2 font-medium">This means:</p>
+    <ul class="space-y-2 text-sm text-gray-700 mb-4">
+        <li>✅ Works for: your own signup/checkout flow (you control it)</li>
+        <li>✅ Works for: any site where you can add a Stripe `client_reference_id`</li>
+        <li>❌ Doesn't work for: third-party sites you don't control</li>
+    </ul>
+    <p class="text-sm text-gray-600">
+        <a href="/docs" class="text-indigo-600 hover:underline font-medium">See the 3-step setup guide →</a>
+    </p>
+</div>
+
+<!-- Who it's for -->
+<div class="max-w-4xl mx-auto mt-16">
+    <h2 class="text-3xl font-bold text-gray-900 text-center mb-8">Built for indie SaaS</h2>
+    <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-lg border border-gray-200">
+            <h3 class="font-semibold text-gray-900 mb-2">✅ Good fit</h3>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• SaaS founders running content marketing</li>
+                <li>• Indie hackers launching on multiple platforms</li>
+                <li>• Newsletter writers tracking sponsor links</li>
+                <li>• Anyone using Stripe for payments</li>
+            </ul>
+        </div>
+        <div class="bg-white p-6 rounded-lg border border-gray-200">
+            <h3 class="font-semibold text-gray-900 mb-2">❌ Not a fit</h3>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• Just needing to shorten links (use Bitly)</li>
+                <li>• Non-Stripe payment flows (yet)</li>
+                <li>• Multi-user enterprise (coming later)</li>
+            </ul>
+        </div>
     </div>
-    <div class="bg-white p-6 rounded-lg border border-gray-200">
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">Attribute revenue</h3>
-        <p class="text-gray-600">Connect Stripe and see exactly which links drove payments. Know your ROI.</p>
-    </div>
+</div>
+
+<!-- Final CTA -->
+<div class="text-center mt-16 mb-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">Stop guessing which channel works.</h2>
+    <a href="/register" class="inline-block bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 font-medium">
+        Get started free
+    </a>
+    <p class="text-sm text-gray-500 mt-3">No credit card required · Free for small projects</p>
 </div>
 
 {% endblock %}
