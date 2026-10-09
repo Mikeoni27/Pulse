@@ -18,5 +18,8 @@ class Settings(BaseSettings):
     STRIPE_SECRET_KEY: str = ""
     STRIPE_WEBHOOK_SECRET: str = ""
 
+    # UI
+    BASE_URL: str = "http://localhost:8000"
+
 
 settings = Settings()

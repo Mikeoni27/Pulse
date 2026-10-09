@@ -1,11 +1,12 @@
 ﻿from contextlib import asynccontextmanager
 
 import redis.asyncio as aioredis
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from sqlalchemy import text
 
 from app.api.v1.redirect import router as redirect_router
 from app.api.v1.router import api_router
+from app.api.views import router as views_router
 from app.core.config import settings
 from app.db.session import engine
 
@@ -29,18 +30,23 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+
+@app.middleware("http")
+async def no_cache_html(request: Request, call_next):
+    """Prevent browser caching of HTML so auth state refreshes correctly."""
+    response = await call_next(request)
+    content_type = response.headers.get("content-type", "")
+    if "text/html" in content_type:
+        response.headers["Cache-Control"] = "no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+    return response
+
+
+# Order matters: views_router owns "/", so include it last
+# to give API + redirect routers priority on their paths.
 app.include_router(api_router)
 app.include_router(redirect_router)
-
-
-@app.get("/", tags=["root"])
-async def root() -> dict:
-    return {
-        "name": settings.APP_NAME,
-        "status": "running",
-        "docs": "/docs",
-        "health": "/health",
-    }
+app.include_router(views_router)
 
 
 @app.get("/health", tags=["health"])

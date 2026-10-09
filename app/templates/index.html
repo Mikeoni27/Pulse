@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Pulse — Link attribution{% endblock %}
+{% block content %}
+
+<div class="text-center py-16">
+    <h1 class="text-5xl font-bold text-gray-900 mb-4">
+        Which links actually <span class="text-indigo-600">make you money?</span>
+    </h1>
+    <p class="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+        Pulse is a link shortener with built-in revenue attribution.
+        Create a link, share it anywhere, and see exactly which clicks turned into payments.
+    </p>
+    <div class="flex gap-4 justify-center">
+        <a href="/register" class="bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 font-medium">
+            Get started free
+        </a>
+        <a href="/login" class="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg hover:bg-gray-50 font-medium">
+            Login
+        </a>
+    </div>
+</div>
+
+<div class="grid md:grid-cols-3 gap-6 mt-16">
+    <div class="bg-white p-6 rounded-lg border border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Shorten & share</h3>
+        <p class="text-gray-600">Create short links with custom slugs. Share them anywhere — Twitter, email, blog posts.</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg border border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Track every click</h3>
+        <p class="text-gray-600">See who clicked, from where, on what device — with real-time analytics.</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg border border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Attribute revenue</h3>
+        <p class="text-gray-600">Connect Stripe and see exactly which links drove payments. Know your ROI.</p>
+    </div>
+</div>
+
+{% endblock %}
