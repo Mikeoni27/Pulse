@@ -16,6 +16,9 @@ class UserRead(BaseModel):
     email: EmailStr
     is_active: bool
     created_at: datetime
+    subscription_tier: str
+    subscription_status: str | None
+    subscription_current_period_end: datetime | None
 
 
 class Token(BaseModel):

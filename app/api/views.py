@@ -51,7 +51,11 @@ async def pricing_page(request: Request, db: AsyncSession = Depends(get_db)):
     user = await get_optional_user(request, db)
     return templates.TemplateResponse(
         "pricing.html",
-        {"request": request, "current_user": user},
+        {
+            "request": request,
+            "current_user": user,
+            "current_tier": user.subscription_tier if user else None,
+        },
     )
 
 
@@ -183,6 +187,10 @@ async def dashboard(request: Request, db: AsyncSession = Depends(get_db)):
     elif error_code == "not_found":
         error_msg = "Link not found or does not belong to you."
 
+    success_msg = None
+    if request.query_params.get("upgraded") == "1":
+        success_msg = "Welcome to Pro! Your subscription is active."
+
     return templates.TemplateResponse(
         "dashboard.html",
         {
@@ -194,6 +202,7 @@ async def dashboard(request: Request, db: AsyncSession = Depends(get_db)):
             "total_revenue_cents": total_revenue_cents,
             "total_conversions": summary["total_conversions"],
             "error": error_msg,
+            "success": success_msg,
         },
     )
 
@@ -242,15 +251,12 @@ async def link_detail(
 
     from app.services import attribution_service, link_service
 
-    # Fetch the link — enforce ownership
     link = await link_service.get_link_owner_check(db, short_code, user.id)
     if not link:
         return RedirectResponse(url="/dashboard?error=not_found", status_code=303)
 
-    # Get click stats
     stats = await link_service.get_link_stats(db, link)
 
-    # Get revenue for this specific link
     revenue_items = await attribution_service.get_revenue_by_link(db, user.id, limit=100)
     revenue = next(
         (r for r in revenue_items if r["short_code"] == short_code),
