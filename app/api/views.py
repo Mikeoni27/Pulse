@@ -186,6 +186,8 @@ async def dashboard(request: Request, db: AsyncSession = Depends(get_db)):
         error_msg = "Something went wrong. Please try again."
     elif error_code == "not_found":
         error_msg = "Link not found or does not belong to you."
+    elif error_code == "quota":
+        error_msg = "You've reached your Free plan limit of 20 links. Upgrade to Pro for unlimited links."
 
     success_msg = None
     if request.query_params.get("upgraded") == "1":
@@ -231,6 +233,8 @@ async def create_link_ui(
 
     try:
         await link_service.create_link(db, payload, owner_id=user.id)
+    except link_service.QuotaExceededError:
+        return RedirectResponse(url="/dashboard?error=quota", status_code=303)
     except ValueError:
         return RedirectResponse(url="/dashboard?error=code_taken", status_code=303)
     except Exception:

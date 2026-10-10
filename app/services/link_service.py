@@ -2,7 +2,7 @@ import secrets
 import string
 import uuid
 
-from sqlalchemy import select, update
+from sqlalchemy import func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -13,6 +13,11 @@ from app.schemas.link import LinkCreate
 ALPHABET = string.ascii_letters + string.digits  # base62
 CODE_LENGTH = 7
 MAX_GENERATION_ATTEMPTS = 5
+
+
+class QuotaExceededError(Exception):
+    """Raised when a user exceeds their tier's quota."""
+    pass
 
 
 def generate_short_code(length: int = CODE_LENGTH) -> str:
@@ -76,7 +81,29 @@ async def create_link(
 
     Raises:
         ValueError: if a requested custom_code is already taken.
+        QuotaExceededError: if the user has hit their tier's link limit.
     """
+    # --- Tier enforcement ---
+    if owner_id is not None:
+        from app.core.tiers import get_tier
+        from app.db.models.user import User
+
+        user_result = await db.execute(select(User).where(User.id == owner_id))
+        user = user_result.scalar_one_or_none()
+        if user:
+            tier = get_tier(user.subscription_tier)
+            max_links = tier["max_links"]
+            if max_links is not None:
+                count_result = await db.execute(
+                    select(func.count(Link.id)).where(Link.owner_id == owner_id)
+                )
+                current_count = count_result.scalar_one()
+                if current_count >= max_links:
+                    raise QuotaExceededError(
+                        f"You've reached your {tier['name']} plan limit of {max_links} links. "
+                        f"Upgrade to Pro for unlimited links."
+                    )
+
     target = str(payload.target_url)
 
     if payload.custom_code:
@@ -196,6 +223,7 @@ async def enqueue_click(
                 user_agent=user_agent,
                 referrer=referrer,
             )
+
 
 async def get_link_owner_check(
     db: AsyncSession, short_code: str, owner_id: uuid.UUID
