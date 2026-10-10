@@ -1,5 +1,3 @@
-import uuid
-
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,6 +19,8 @@ async def create_link(
 ) -> Link:
     try:
         link = await link_service.create_link(db, payload, owner_id=current_user.id)
+    except link_service.QuotaExceededError as e:
+        raise HTTPException(status_code=status.HTTP_402_PAYMENT_REQUIRED, detail=str(e))
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
     except RuntimeError as e:
