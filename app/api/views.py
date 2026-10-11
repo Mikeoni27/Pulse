@@ -153,6 +153,7 @@ async def dashboard(request: Request, db: AsyncSession = Depends(get_db)):
     if not user:
         return RedirectResponse(url="/login", status_code=303)
 
+    from app.core.tiers import get_tier
     from app.services import attribution_service, link_service
 
     links = await link_service.list_links(db, owner_id=user.id, limit=50)
@@ -175,6 +176,15 @@ async def dashboard(request: Request, db: AsyncSession = Depends(get_db)):
 
     total_clicks = sum(l["click_count"] for l in enriched)
     total_revenue_cents = summary["total_revenue_cents"]
+
+    # --- Tier info for usage widget ---
+    tier = get_tier(user.subscription_tier)
+    max_links = tier["max_links"]  # None for unlimited
+    show_upgrade_prompt = (
+        max_links is not None
+        and len(enriched) >= max_links * 0.75
+        and len(enriched) < max_links
+    )
 
     error_msg = None
     error_code = request.query_params.get("error")
@@ -205,6 +215,9 @@ async def dashboard(request: Request, db: AsyncSession = Depends(get_db)):
             "total_conversions": summary["total_conversions"],
             "error": error_msg,
             "success": success_msg,
+            "tier_name": tier["name"],
+            "max_links": max_links,
+            "show_upgrade_prompt": show_upgrade_prompt,
         },
     )
 

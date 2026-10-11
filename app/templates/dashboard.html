@@ -7,11 +7,43 @@
     <p class="text-gray-600 mt-1">Your links and their performance</p>
 </div>
 
+<!-- Upgrade prompt (near limit) -->
+{% if show_upgrade_prompt %}
+<div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg flex justify-between items-center">
+    <div>
+        <p class="text-sm font-medium text-amber-900">
+            You've used {{ total_links }} of {{ max_links }} links on your {{ tier_name }} plan.
+        </p>
+        <p class="text-xs text-amber-700 mt-0.5">
+            Upgrade to Pro for unlimited links, 1M clicks/month, and 365-day retention.
+        </p>
+    </div>
+    <a href="/pricing" class="bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-700 whitespace-nowrap">
+        Upgrade
+    </a>
+</div>
+{% endif %}
+
 <!-- Summary cards -->
 <div class="grid md:grid-cols-4 gap-4 mb-8">
     <div class="bg-white p-6 rounded-lg border border-gray-200">
         <div class="text-sm text-gray-500 mb-1">Links</div>
-        <div class="text-3xl font-bold text-gray-900">{{ total_links }}</div>
+        {% if max_links is none %}
+            <div class="text-3xl font-bold text-gray-900">{{ total_links }}</div>
+            <div class="text-xs text-gray-400 mt-1">{{ tier_name }} — unlimited</div>
+        {% else %}
+            <div class="text-3xl font-bold text-gray-900">{{ total_links }} <span class="text-lg text-gray-400">/ {{ max_links }}</span></div>
+            <div class="w-full bg-gray-100 rounded-full h-1.5 mt-3">
+                {% set pct = (total_links * 100 / max_links) | round(0, 'ceil') | int %}
+                {% set bar_color = 'bg-red-500' if pct >= 100 else ('bg-amber-500' if pct >= 80 else 'bg-indigo-600') %}
+                <div class="{{ bar_color }} h-1.5 rounded-full" style="width: {{ [pct, 100] | min }}%"></div>
+            </div>
+            {% if total_links >= max_links %}
+                <div class="text-xs text-red-600 mt-2 font-medium">Limit reached</div>
+            {% elif total_links >= max_links * 0.75 %}
+                <div class="text-xs text-amber-600 mt-2 font-medium">{{ pct }}% used — running low</div>
+            {% endif %}
+        {% endif %}
     </div>
     <div class="bg-white p-6 rounded-lg border border-gray-200">
         <div class="text-sm text-gray-500 mb-1">Total clicks</div>
